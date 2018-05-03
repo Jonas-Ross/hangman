@@ -1,6 +1,9 @@
 <template>
   <div class="style">
     <q-page>
+      <div v-if="clue.length !== 0">
+        {{clue}}
+      </div>
       <h4 class="text-center">{{wordDisplay}}</h4>
       {{guessFeedback}}
       <br>
@@ -29,7 +32,8 @@
         guessField: "",
         wordDisplay: "",
         guessFeedback: "",
-        guessedLetters: []
+        guessedLetters: [],
+        clue: ""
       }
     },
     created() {
@@ -38,6 +42,7 @@
           this.word = response.data[0].word
           console.log(this.word)
           this.wordDisplay = response.data[0].word.replace(/[a-z]/g, '_')
+          this.displayClue()
         })
     },
     methods: {
@@ -78,6 +83,7 @@
           });
           this.resetWord()
           this.resetGuesses()
+          this.resetClue()
         }
       },
       resetWord() {
@@ -85,13 +91,26 @@
           .then(response => {
             this.word = response.data[0].word
             console.log(this.word)
-
             this.wordDisplay = response.data[0].word.replace(/[a-z]/g, '_')
+            this.displayClue()
           })
+      },
+      resetClue() {
+        this.clue = ""
       },
       resetGuesses() {
         this.guessedLetters = []
         this.guessFeedback = ""
+      },
+      displayClue() {
+        this.$axios.get("https://api.datamuse.com/words?topics=" + this.word + "&max=3")
+          .then((response) => {
+            let clue1 = response.data[0].word
+            let clue2 = response.data[1].word
+            let clue3 = response.data[2].word
+
+            this.clue = "Topics related to the word: " + clue1 + ", " + clue2 + ", " + clue3
+          })
       }
     },
   }
