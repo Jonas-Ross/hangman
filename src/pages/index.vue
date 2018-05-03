@@ -37,7 +37,6 @@
         .then(response => {
           this.word = response.data[0].word
           console.log(this.word)
-
           this.wordDisplay = response.data[0].word.replace(/[a-z]/g, '_')
         })
     },
